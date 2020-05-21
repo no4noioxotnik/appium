@@ -193,11 +193,23 @@ public class BaseTest {
 	
 	public AppiumDriverLocalService getAppiumService() {
 		HashMap<String, String> environment = new HashMap<String, String>();
-		environment.put("PATH", "/Library/Java/JavaVirtualMachines/jdk1.8.0_231.jdk/Contents/Home/bin:/Users/Om/Library/Android/sdk/tools:/Users/Om/Library/Android/sdk/platform-tools:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin" + System.getenv("PATH"));
-		environment.put("ANDROID_HOME", "/Users/Om/Library/Android/sdk");
+		String androidHomePath = "C:\\Users\\Xiaomi\\AppData\\Local\\Android\\Sdk";
+		String javaJdkHomeBinPath = "C:\\Program Files\\Java\\jdk1.8.0_241\\bin";
+		String androidSdkToolsPath = "C:\\Users\\Xiaomi\\AppData\\Local\\Android\\Sdk\\tools";
+		String androidSdkPlatformToolsPath = "C:\\Users\\Xiaomi\\AppData\\Local\\Android\\Sdk\\platform-tools";
+		String nodeJsPath = "C:\\Program Files\\nodejs\\node.exe";
+		String appiumMainJs = "C:\\Users\\Xiaomi\\AppData\\Roaming\\npm\\node_modules\\appium\\build\\lib\\main.js";
+//		environment.put("PATH", "/Library/Java/JavaVirtualMachines/jdk1.8.0_231.jdk/Contents/Home/bin:/Users/Om/Library/Android/sdk/tools:/Users/Om/Library/Android/sdk/platform-tools:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin" + System.getenv("PATH"));
+		environment.put("PATH", javaJdkHomeBinPath.replace("\\", "/") + ":"
+				+ androidSdkToolsPath.replace("\\", "/") + ":"
+				+ androidSdkPlatformToolsPath.replace("\\", "/") + ":"
+				+ System.getenv("PATH"));
+		environment.put("ANDROID_HOME", androidHomePath.replace("\\", "/"));
 		return AppiumDriverLocalService.buildService(new AppiumServiceBuilder()
-				.usingDriverExecutable(new File("/usr/local/bin/node"))
-				.withAppiumJS(new File("/usr/local/lib/node_modules/appium/build/lib/main.js"))
+//				.usingDriverExecutable(new File("/usr/local/bin/node"))
+				.usingDriverExecutable(new File(nodeJsPath.replace("\\", "/")))
+//				.withAppiumJS(new File("/usr/local/lib/node_modules/appium/build/lib/main.js"))
+				.withAppiumJS(new File(appiumMainJs.replace("\\", "/")))
 				.usingPort(4723)
 				.withArgument(GeneralServerFlag.SESSION_OVERRIDE)
 				.withEnvironment(environment)
@@ -259,11 +271,16 @@ public class BaseTest {
 				}
 				desiredCapabilities.setCapability("systemPort", systemPort);
 				desiredCapabilities.setCapability("chromeDriverPort", chromeDriverPort);
-				String androidAppUrl = getClass().getResource(props.getProperty("androidAppLocation")).getFile();
+
+				String androidAppUrl = new File("src/test/resources/app/Android.SauceLabs.Mobile.Sample.app.2.2.1.apk")
+						.getAbsolutePath();
+//				String androidAppUrl = getClass().getResource(props.getProperty("androidAppLocation")).getFile();
+//				String androidAppUrl = "";
 				utils.log().info("appUrl is" + androidAppUrl);
 				desiredCapabilities.setCapability("app", androidAppUrl);
 
 				driver = new AndroidDriver(url, desiredCapabilities);
+
 				break;
 			case "iOS":
 				desiredCapabilities.setCapability("automationName", props.getProperty("iOSAutomationName"));
